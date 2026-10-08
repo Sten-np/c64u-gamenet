@@ -1,0 +1,21 @@
+# Build output (objects, listings, maps, label files, .prg images)
+/build/
+
+# Locally bootstrapped toolchain (see build.ps1 bootstrap)
+/tools/cc65/
+
+# Stray assembler/linker artifacts outside build/
+*.o
+*.lst
+*.map
+*.lbl
+*.dbg
+
+# Emulator / editor / OS noise
+*.bak
+*.swp
+*~
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

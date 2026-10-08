@@ -13,22 +13,29 @@ multiplayer adaptations of existing C64 games.
 
 ## Milestone 0 — Project Foundation
 
-**Status:** 🔲 Not started
+**Status:** ✅ Complete (build verified on Windows; real C64 Ultimate run pending — see notes)
 
 Establish a reproducible 6502 development environment.
 
 ### Tasks
 
-- [ ] Establish project structure
-- [ ] Select 6502 assembler/toolchain
-- [ ] Document assembler choice
-- [ ] Create build system
-- [ ] Create minimal C64 program
-- [ ] Produce a valid `.prg`
-- [ ] Verify build process
-- [ ] Create initial documentation
-- [ ] Create `.gitignore`
-- [ ] Create `CHANGELOG.md`
+- [x] Establish project structure
+- [x] Select 6502 assembler/toolchain — ca65/ld65 (cc65 V2.19)
+- [x] Document assembler choice — `docs/toolchain.md`
+- [x] Create build system — `build.ps1` (Windows), `Makefile` (GNU Make)
+- [x] Create minimal C64 program — `src/hello/hello.s`
+- [x] Produce a valid `.prg` — `build/hello.prg`
+- [x] Verify build process — `.\build.ps1 verify` (static structure check)
+- [x] Create initial documentation — `README.md`, `docs/toolchain.md`
+- [x] Create `.gitignore`
+- [x] Create `CHANGELOG.md`
+
+### Notes
+
+- `build/hello.prg` has not yet been run on a real C64 Ultimate or an
+  emulator; `verify` checks file structure only.
+- The `Makefile` has not yet been exercised (GNU Make was not available
+  on the development machine).
 
 ### Completion criteria
 
