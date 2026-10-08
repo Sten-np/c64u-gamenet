@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed — Project scope clarification
+
+- GameNet is now defined as a multiplayer API/library for C64 games,
+  not a networking stack; the C64 Ultimate provides the networking.
+- `roadmap.md` restructured: Milestone 1 is now the internal C64U
+  communication layer (two-machine byte exchange), followed by message
+  layer, background reception, game-facing API (names not finalized),
+  test application, synchronization, reverse engineering and first
+  game. Added open questions not answered by the C64U User Guide and
+  an explicit out-of-scope list.
+- Added `docs/architecture.md` separating the game-facing API, GameNet
+  implementation, C64U communication interface and C64U networking.
+- `README.md` updated to the new scope.
+
 ### Added — Milestone 0: Project Foundation
 
 - Selected the ca65/ld65 assembler and linker (cc65 suite, V2.19) as the

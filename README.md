@@ -1,18 +1,22 @@
 # C64U GameNet
 
-A 6502 assembly networking library for **Commodore 64 Ultimate**
-systems. The long-term goal is to let C64 programs on separate C64
-Ultimate machines communicate over a network, enabling multiplayer
-adaptations of existing C64 games.
+A small 6502 assembly **multiplayer API/library for C64 games** on
+**Commodore 64 Ultimate** systems. The long-term goal is multiplayer
+adaptations of existing C64 games running on separate C64 Ultimate
+machines.
 
-The intended network path is the C64U's documented 6551 ACIA /
-SwiftLink modem emulation (C64U User Guide, p. 157), not direct access
-to the C64U's network hardware:
+GameNet is not a networking stack: it does not implement TCP/IP or
+Wi-Fi. The C64 Ultimate provides the networking; GameNet reaches it
+internally through the C64U's documented 6551 ACIA / SwiftLink modem
+emulation (C64U User Guide, p. 157). Games only use the GameNet API:
 
 ```
-C64 game -> C64Net API -> connection/protocol -> ACIA/6551 driver
-         -> C64 Ultimate modem emulation -> TCP/network
+C64 game -> GameNet multiplayer API -> GameNet implementation
+         -> C64U communication interface (6551/SwiftLink, internal)
+         -> C64 Ultimate networking (provided by the C64U)
 ```
+
+See [`docs/architecture.md`](docs/architecture.md).
 
 ## Status
 
@@ -89,5 +93,7 @@ tools/cc65/     locally bootstrapped toolchain (git-ignored)
 
 - [`docs/toolchain.md`](docs/toolchain.md) — assembler choice,
   build system, memory layout, sources of hardware facts.
+- [`docs/architecture.md`](docs/architecture.md) — layers and
+  responsibilities (API, implementation, C64U interface, C64U networking).
 - [`roadmap.md`](roadmap.md) — milestones.
 - [`CHANGELOG.md`](CHANGELOG.md) — changes.
