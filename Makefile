@@ -22,22 +22,30 @@ OBJ     := $(BUILD)/obj
 CONFIG  := cfg/c64-prg.cfg
 ASFLAGS := --cpu 6502 -g -I src/include
 
+INCLUDES   := $(wildcard src/include/*.inc)
 COMMON_SRC := src/common/basic_stub.s
 
-PROGRAMS := hello
+# Programs and their sources (keep in sync with build.ps1).
+PROGRAMS := hello commtest
+# Milestone 0: toolchain check (stock C64)
 hello_SRC := src/hello/hello.s
+# Milestone 1: two-machine C64U communication test (C64U only)
+commtest_SRC := src/c64u/acia.s src/c64u/modem.s src/tests/commtest.s
 
 all: $(foreach p,$(PROGRAMS),$(BUILD)/$(p).prg)
 
 # Object file name: <program>-<source basename>.o
+objname = $(OBJ)/$(1)-$(basename $(notdir $(2))).o
+
+# One assemble rule per (program, source) pair.
+define SOURCE_template
+$(call objname,$(1),$(2)): $(2) $(INCLUDES) | $(OBJ)
+	$$(CA65) $$(ASFLAGS) -l $$(@:.o=.lst) -o $$@ $$<
+endef
+
 define PROGRAM_template
-$(1)_OBJ := $$(foreach s,$$(COMMON_SRC) $$($(1)_SRC),$$(OBJ)/$(1)-$$(basename $$(notdir $$(s))).o)
-
-$$(OBJ)/$(1)-%.o: src/common/%.s src/include/c64.inc | $$(OBJ)
-	$$(CA65) $$(ASFLAGS) -l $$(@:.o=.lst) -o $$@ $$<
-
-$$(OBJ)/$(1)-%.o: src/$(1)/%.s src/include/c64.inc | $$(OBJ)
-	$$(CA65) $$(ASFLAGS) -l $$(@:.o=.lst) -o $$@ $$<
+$(1)_OBJ := $(foreach s,$(COMMON_SRC) $($(1)_SRC),$(call objname,$(1),$(s)))
+$(foreach s,$(COMMON_SRC) $($(1)_SRC),$(eval $(call SOURCE_template,$(1),$(s))))
 
 $$(BUILD)/$(1).prg: $$($(1)_OBJ) $$(CONFIG)
 	$$(LD65) -C $$(CONFIG) -m $$(BUILD)/$(1).map -Ln $$(BUILD)/$(1).lbl -o $$@ $$($(1)_OBJ)

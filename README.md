@@ -21,8 +21,14 @@ See [`docs/architecture.md`](docs/architecture.md).
 ## Status
 
 **Milestone 0 — Project Foundation** is complete: toolchain, build
-system and a minimal C64 program. No networking code exists yet. See
-[`roadmap.md`](roadmap.md) for the plan.
+system and a minimal C64 program.
+
+**Milestone 1 — C64 Ultimate Communication Layer** is implemented but
+**not yet verified on real hardware**: the internal 6551/modem layer
+(`src/c64u/`) and a two-machine test program (`build/commtest.prg`)
+build, and the test logic passes a simulation, but no two physical
+C64 Ultimate systems have exchanged bytes yet. See
+[`roadmap.md`](roadmap.md).
 
 ## Requirements
 
@@ -39,7 +45,7 @@ Windows:
 
 ```powershell
 .\build.ps1 bootstrap   # first time only: downloads cc65 into tools\cc65
-.\build.ps1 verify      # builds build\hello.prg and checks its structure
+.\build.ps1 verify      # builds build\hello.prg + build\commtest.prg, checks structure
 ```
 
 Other targets: `.\build.ps1 build` (default), `.\build.ps1 clean`,
@@ -49,7 +55,7 @@ Other targets: `.\build.ps1 build` (default), `.\build.ps1 clean`,
 Linux/macOS:
 
 ```sh
-make            # -> build/hello.prg
+make            # -> build/hello.prg, build/commtest.prg
 make clean
 ```
 
@@ -74,6 +80,18 @@ If written to a disk image as `HELLO`, it can be started with
 `LOAD"HELLO",8` followed by `RUN`. It can also be run in any C64
 emulator.
 
+`build/commtest.prg` is the Milestone 1 two-machine test. It requires
+two C64 Ultimate systems with modem emulation enabled; follow
+[`docs/milestone1-hardware-test.md`](docs/milestone1-hardware-test.md).
+It cannot be meaningfully run in a normal C64 emulator.
+
+Optional logic simulation of the test (not hardware verification;
+needs Python 3 and `pip install py65`):
+
+```sh
+python tools/sim/commtest_sim.py
+```
+
 ## Repository layout
 
 ```
@@ -81,6 +99,9 @@ cfg/            ld65 linker configurations
 src/include/    shared include files (constants)
 src/common/     modules shared by all programs (BASIC stub)
 src/hello/      Milestone 0 minimal program
+src/c64u/       internal C64U communication layer (6551 ACIA, modem)
+src/tests/      test programs (Milestone 1 two-machine test)
+tools/sim/      logic simulation of the two-machine test (Python/py65)
 docs/           project documentation
 docs/reference/ reference material (C64U User Guide, 6502 book)
 build.ps1       Windows/PowerShell build script
@@ -95,5 +116,9 @@ tools/cc65/     locally bootstrapped toolchain (git-ignored)
   build system, memory layout, sources of hardware facts.
 - [`docs/architecture.md`](docs/architecture.md) — layers and
   responsibilities (API, implementation, C64U interface, C64U networking).
+- [`docs/c64u-communication.md`](docs/c64u-communication.md) — C64U
+  configuration, register mapping, internal layer API, open questions.
+- [`docs/milestone1-hardware-test.md`](docs/milestone1-hardware-test.md)
+  — two-machine test procedure and results record.
 - [`roadmap.md`](roadmap.md) — milestones.
 - [`CHANGELOG.md`](CHANGELOG.md) — changes.

@@ -41,7 +41,11 @@ $CommonSources = @('src\common\basic_stub.s')
 
 # Programs: output name -> program-specific sources.
 $Programs = [ordered]@{
-    'hello' = @('src\hello\hello.s')
+    # Milestone 0: toolchain check (stock C64).
+    'hello'    = @('src\hello\hello.s')
+    # Milestone 1: two-machine C64U communication test. Links the
+    # internal C64U communication layer (src\c64u) - C64U only.
+    'commtest' = @('src\c64u\acia.s', 'src\c64u\modem.s', 'src\tests\commtest.s')
 }
 
 $CpuFlags = @('--cpu', '6502')

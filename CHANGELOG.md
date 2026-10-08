@@ -6,6 +6,42 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added — Milestone 1: C64 Ultimate Communication Layer (not yet hardware-verified)
+
+- `docs/c64u-communication.md`: C64U modem configuration (`DE00/NMI`,
+  SwiftLink, listening port, RING/ATA), AT commands, incoming-call
+  states and banner, register mapping, internal layer API, resource
+  and cycle notes, emulator limitations, 12 open questions. Every
+  hardware fact is tagged with its source (C64U User Guide pages;
+  external WDC W65C51N datasheet, Ultimate firmware docs, COMPUTE!
+  #10 clearly marked as external).
+- `src/include/c64u.inc`: named ACIA addresses/bits and modem
+  constants (C64U-specific, internal).
+- `src/c64u/acia.s`: `c64u_init`, `c64u_status`, `c64u_send`,
+  `c64u_receive`, `c64u_shutdown` — polled, ACIA interrupts disabled,
+  no zero page, 1 byte RAM.
+- `src/c64u/modem.s`: `c64u_delay`, `c64u_send_string`,
+  `c64u_modem_dial` (`ATDT`), `c64u_modem_answer` (`ATA`),
+  `c64u_modem_hangup` (`+++`, `ATH`) — no zero page, 1 byte RAM.
+- `src/tests/commtest.s` → `build/commtest.prg`: two-machine test
+  (caller/answerer, sync markers that skip modem text and banner,
+  `$00..$FF` A→B and `$FF..$00` B→A, verification, verdict exchange,
+  on-screen status/values/PASS-FAIL, hang-up).
+- `docs/milestone1-hardware-test.md`: physical two-C64U test procedure
+  and empty results record.
+- `tools/sim/commtest_sim.py`: logic simulation of the test on two
+  py65 CPUs with a modem model (not hardware verification).
+- `GETIN` and `PETSCII_DEL` in `src/include/c64.inc`.
+
+### Changed
+
+- `build.ps1` and `Makefile` build `commtest.prg`; the `Makefile` now
+  supports sources from any directory and was verified (via WSL) to
+  produce byte-identical output to `build.ps1`.
+- `roadmap.md`: Milestone 1 status "implemented, not yet verified on
+  hardware" with verification table. `README.md`,
+  `docs/architecture.md`, `docs/toolchain.md` updated.
+
 ### Changed — Project scope clarification
 
 - GameNet is now defined as a multiplayer API/library for C64 games,

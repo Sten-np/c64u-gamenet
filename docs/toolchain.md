@@ -73,11 +73,21 @@ cfg/c64-prg.cfg          ld65 linker configuration (PRG at $0801)
 src/include/c64.inc      stock C64 constants (no C64U-specific items)
 src/common/basic_stub.s  load address + "10 SYS <start>" BASIC line
 src/hello/hello.s        Milestone 0 minimal program
+src/include/c64u.inc     C64U ACIA/modem constants (internal, layer 3)
+src/c64u/acia.s          C64U communication layer: ACIA access
+src/c64u/modem.s         C64U communication layer: dial/answer/hang up
+src/tests/commtest.s     Milestone 1 two-machine test program
+tools/sim/               logic simulation of commtest (Python, py65)
 build/                   output (git-ignored): *.prg, *.map, *.lbl, obj/
 ```
 
 Each program exports `start`; `basic_stub.s` imports it and the linker
 writes its decimal address into the `SYS` line.
+
+Programs and their source lists are defined in two places that must be
+kept in sync: `$Programs` in `build.ps1` and `PROGRAMS` / `<name>_SRC`
+in the `Makefile`. Objects are named `<program>-<source basename>.o`.
+Both builds were checked to produce byte-identical `.prg` files.
 
 ## Memory layout (`cfg/c64-prg.cfg`)
 
@@ -115,3 +125,7 @@ This is a static check only; it does not execute the program.
 | BASIC line format, `SYS` token `$9E`, BASIC start `$0801` | Standard C64 BASIC V2; **not stated in project references** (C64 BASIC reference not yet added) |
 | PETSCII `$93` clear screen, `$0D` return | Standard PETSCII; **not stated in project references** |
 | CHROUT register preservation | **Not documented** in project references; code assumes A, X, Y are clobbered |
+| `GETIN` = `$FFE4`, returns 0 if no key | 6502 Assembly Language Programming, p. 93 |
+| `GETIN` uses X and Y | 6502 Assembly Language Programming, p. 104 |
+| PETSCII `$14` DEL | Standard PETSCII; **not stated in project references** |
+| C64U ACIA/modem facts | See `docs/c64u-communication.md` (C64U User Guide ch. 12 + cited external sources) |

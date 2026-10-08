@@ -10,6 +10,8 @@
 ; Sources:
 ;   CHROUT  - "6502 Assembly Language Programming for Apple, Commodore
 ;             and Atari Computers", pp. 98-99 and 111 (docs/reference/).
+;   GETIN   - same book, p. 93 (address, A=0 if no key) and p. 104
+;             (GETIN uses the X and Y registers).
 ;   BASIC_* - Standard C64 BASIC V2 program format. NOT yet confirmed
 ;             by a project reference (the C64 BASIC reference is not
 ;             yet in docs/reference/). Needs verification.
@@ -29,6 +31,11 @@ C64_INC = 1
 ; preserves, so callers must not rely on X or Y surviving the call.
 CHROUT              = $FFD2
 
+; GETIN - get the most recently typed key from the keyboard into A;
+; A = 0 if no key was typed. Uses X and Y (book p. 104), so callers
+; must save them if needed.
+GETIN               = $FFE4
+
 ; ---------------------------------------------------------------------
 ; BASIC program memory
 ; ---------------------------------------------------------------------
@@ -46,5 +53,6 @@ BASIC_TOKEN_SYS     = $9E
 
 PETSCII_RETURN      = $0D       ; carriage return / new line
 PETSCII_CLEAR       = $93       ; clear screen, cursor home
+PETSCII_DEL         = $14       ; delete (backspace) key / control code
 
 .endif

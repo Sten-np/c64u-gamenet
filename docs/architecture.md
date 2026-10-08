@@ -116,10 +116,17 @@ Established by the C64U User Guide (1st edition, chapter 12):
   C64 software (p. 160).
 
 Not established by the C64U User Guide (must be verified before use —
-see roadmap Milestone 1, "Open questions"): the emulated register
-layout and bit meanings, baud-rate behaviour, binary transparency of
-the connection, NMI generation/acknowledgement, and how connection
-state is visible to the C64.
+see `docs/c64u-communication.md`, "Open Questions"): the emulated
+register layout and bit meanings, baud-rate behaviour, binary
+transparency of the connection, NMI generation/acknowledgement, and
+how connection state is visible to the C64.
+
+Implementation (Milestone 1): `src/c64u/acia.s` (polled ACIA access:
+`c64u_init`, `c64u_status`, `c64u_send`, `c64u_receive`,
+`c64u_shutdown`) and `src/c64u/modem.s` (`c64u_modem_dial`,
+`c64u_modem_answer`, `c64u_modem_hangup`), constants in
+`src/include/c64u.inc`. These are internal symbols, not the public
+API. Details: [`c64u-communication.md`](c64u-communication.md).
 
 Consequences for GameNet:
 
@@ -161,17 +168,16 @@ C64U; it does not implement or control any of it.
 | TCP, Telnet, Ethernet, Wi-Fi, IP address | C64 Ultimate          |
 | C64U menu configuration                  | User (documented by GameNet) |
 
-## Source layout (planned)
-
-Only `src/include`, `src/common` and `src/hello` exist today. The
-intended separation, to be introduced with the corresponding
-milestones, is:
+## Source layout
 
 ```text
-src/include/   shared constants; public API include for games
-src/gamenet/   layer 1 + 2 (public API and internal logic)
-src/c64u/      layer 3 (C64U communication interface)
-src/tests/     test programs
+src/include/   shared constants (c64.inc: stock C64; c64u.inc: C64U,
+               internal to layer 3); later: public API include
+src/common/    BASIC stub shared by all programs
+src/hello/     Milestone 0 program
+src/c64u/      layer 3 (C64U communication interface)   [Milestone 1]
+src/tests/     test programs                            [Milestone 1]
+src/gamenet/   layer 1 + 2 (public API and internal logic) [planned]
 ```
 
 Exact names are decided when each milestone is implemented.

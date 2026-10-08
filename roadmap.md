@@ -66,8 +66,9 @@ Establish a reproducible 6502 development environment.
 
 - `build/hello.prg` has not yet been run on a real C64 Ultimate or an
   emulator; `verify` checks file structure only.
-- The `Makefile` has not yet been exercised (GNU Make was not available
-  on the development machine).
+- The `Makefile` was first exercised during Milestone 1 (GNU Make in
+  WSL with the Windows cc65 binaries); its output is byte-identical to
+  `build.ps1`.
 
 ### Completion criteria
 
@@ -77,7 +78,8 @@ A clean checkout of the repository can be built from the command line and produc
 
 ## Milestone 1 — C64 Ultimate Communication Layer
 
-**Status:** 🔲 Not started — next implementation milestone
+**Status:** 🟡 Implemented, **not yet verified on hardware** — incomplete
+until two physical C64 Ultimate systems have run the test
 
 Prove that GameNet can exchange bytes and simple test messages
 between **two C64 Ultimate systems**, using the C64U's documented
@@ -90,36 +92,62 @@ network connection.
 
 ### Tasks
 
-- [ ] Document the communication interface as established by the
+- [x] Document the communication interface as established by the
       C64U User Guide (mapping, hardware mode, supported AT commands,
       incoming-connection behaviour) — `docs/c64u-communication.md`
-- [ ] Identify and list facts the C64U User Guide does **not**
-      establish (see "Open questions" below) and how each is verified
-- [ ] Document the required C64U configuration for both machines
-      (modem enabled, `DE00/NMI`, SwiftLink, listening port)
-- [ ] Define named constants for the communication interface
-- [ ] Implement initialization of the communication interface
-- [ ] Implement status reading (data available / ready to send)
-- [ ] Implement polled byte send and byte receive
-- [ ] Implement the minimal modem command handling needed for one
+- [x] Identify and list facts the C64U User Guide does **not**
+      establish and how each is verified —
+      `docs/c64u-communication.md`, "Open Questions" (12 items)
+- [x] Document the required C64U configuration for both machines
+      (modem enabled, `DE00/NMI`, SwiftLink, listening port) —
+      `docs/c64u-communication.md`, `docs/milestone1-hardware-test.md`
+- [x] Define named constants for the communication interface —
+      `src/include/c64u.inc`
+- [x] Implement initialization of the communication interface —
+      `c64u_init` (`src/c64u/acia.s`)
+- [x] Implement status reading (data available / ready to send) —
+      `c64u_status`
+- [x] Implement polled byte send and byte receive — `c64u_send`,
+      `c64u_receive`
+- [x] Implement the minimal modem command handling needed for one
       C64U to call the other (`ATDT host:port`) and for the other to
-      answer (`RING` / `ATA`), and to hang up (`ATH`)
-- [ ] Handle the banner text the C64U sends to the calling side
-      before the connection carries program data (p. 160)
-- [ ] Create a two-machine test program (one side calls, one side
+      answer (`RING` / `ATA`), and to hang up (`+++`, `ATH`) —
+      `src/c64u/modem.s`
+- [x] Handle the banner text the C64U sends to the calling side
+      before the connection carries program data (p. 160) — the test
+      shows and discards all text until a sync marker
+- [x] Create a two-machine test program (one side calls, one side
       answers; send a known byte pattern in both directions; verify
-      and report errors on screen)
-- [ ] Test on two real C64 Ultimate systems
-- [ ] Record test results and any verified hardware behaviour
+      and report errors on screen) — `src/tests/commtest.s` →
+      `build/commtest.prg`
+- [x] Document the physical test procedure —
+      `docs/milestone1-hardware-test.md`
+- [ ] Test on two real C64 Ultimate systems — **not yet performed**
+- [ ] Record test results and any verified hardware behaviour —
+      results form in `docs/milestone1-hardware-test.md` is empty
+
+### Verification status (2026-10-08)
+
+| Check | Result |
+|---|---|
+| `.\build.ps1 verify` (hello + commtest) | ✅ builds; both `.prg` structurally valid |
+| GNU Make build (via WSL, Windows cc65) | ✅ byte-identical `.prg` files to `build.ps1` |
+| Milestone 0 `hello.prg` | ✅ unchanged; on a simulated 6502 (KERNAL calls trapped) prints its banner and returns |
+| Logic simulation `tools/sim/commtest_sim.py` (two simulated CPUs + modem *model*) | ✅ 6/6 scenarios as expected (4 pass, 2 corrupted links reported as FAIL) — logic only, **not** C64U verification |
+| VICE | ⛔ not installed; cannot emulate the C64U modem layer anyway |
+| Two physical C64 Ultimate systems | ⛔ **not performed** |
 
 ### Open questions requiring verification
 
 The C64U User Guide does not establish these; they must be answered
 by testing on real hardware or by an additional, explicitly cited
-reference before being relied on:
+reference before being relied on. The full, current list (12 items)
+is maintained in `docs/c64u-communication.md`, "Open Questions".
 
 - The 6551 register layout and bit meanings as emulated by the C64U
-  (the guide only names the chip and the `DE00` mapping).
+  (the guide only names the chip and the `DE00` mapping). The
+  implementation uses the external WDC W65C51N datasheet layout,
+  pending hardware confirmation.
 - Supported baud-rate settings and their effect (the guide only shows
   19200 as an example CCGMS setting).
 - Whether all 256 byte values pass through the connection unchanged
